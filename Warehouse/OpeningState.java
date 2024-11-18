@@ -1,51 +1,52 @@
-import java.util.Scanner;
+import javax.swing.*;
+import java.awt.*;
 
-public class OpeningState implements SuperState{
+public class OpeningState implements SuperState {
     public static ClientMenuState client;
     public static ClerkMenuState clerk;
     public static ManagerMenuState manager;
-    public OpeningState(){
-        if(client == null || clerk == null || manager == null){
-            client = new ClientMenuState();
-            clerk = new ClerkMenuState();
-            manager = new ManagerMenuState();
+    private JFrame frame;
+
+    public OpeningState(JFrame frame) {
+        this.frame = frame;
+
+        WarehouseConsole functionMule = new WarehouseConsole();
+
+        // Placeholder client (replace with actual login mechanism)
+        Client dummyClient = new Client("Default", "Default Address", "000-000-0000", 0.0);
+
+        if (client == null || clerk == null || manager == null) {
+            client = new ClientMenuState(frame, functionMule, dummyClient);
+            clerk = new ClerkMenuState(frame);
+            manager = new ManagerMenuState(frame);
         }
     }
 
-    public void run(){
-        Scanner scanner = new Scanner(System.in);
-        boolean findingNextState = true;
-        while(findingNextState){
-            System.out.println("Where do you want to go?");
-            System.out.println("1: client menu state");
-            System.out.println("2: clerk menu state");
-            System.out.println("3: manager menu state");
-            System.out.println("11: to exit");
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-            switch(choice){
-                case 1: 
-                    runner(client);
-                    break;
-                case 2:
-                    runner(clerk);
-                    break;
-                case 3:
-                    runner(manager);
-                    break;
-                case 11:
-                    System.out.println("exiting...");
-                    findingNextState = false;
-                    break;
-                default:
-                    System.out.println("invalid input, try again");
-            }
-        }
-        System.out.println("made it");
-        scanner.close();
-    }
+    @Override
+    public void run() {
+        frame.getContentPane().removeAll();
+        frame.setTitle("Opening State");
 
-    private static <T extends SuperState> void runner(T t){
-        t.run();
+        JPanel panel = new JPanel(new GridLayout(0, 1, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JButton clientMenuButton = new JButton("Client Menu State");
+        JButton clerkMenuButton = new JButton("Clerk Menu State");
+        JButton managerMenuButton = new JButton("Manager Menu State");
+        JButton exitButton = new JButton("Exit");
+
+        panel.add(clientMenuButton);
+        panel.add(clerkMenuButton);
+        panel.add(managerMenuButton);
+        panel.add(exitButton);
+
+        clientMenuButton.addActionListener(e -> client.run());
+        clerkMenuButton.addActionListener(e -> clerk.run());
+        managerMenuButton.addActionListener(e -> manager.run());
+        exitButton.addActionListener(e -> System.exit(0));
+
+        frame.add(panel);
+        frame.revalidate();
+        frame.repaint();
     }
 }
