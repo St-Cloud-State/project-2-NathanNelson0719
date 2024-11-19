@@ -31,8 +31,11 @@ public class ClientList {
         return clients.add(client);
     }
 
-    // Get an iterator for the clients
     public Iterator<Client> getClients() {
+        if (clients == null) {
+            clients = new ArrayList<>(); // Ensure the list is initialized
+        }
         return clients.iterator();
     }
+    
 }
